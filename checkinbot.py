@@ -14,29 +14,29 @@ __contact__ = "Vincent Fabioux <vincent.fabioux@u-psud.fr>"
 
 import argparse
 
-from src.tokenise import tokenise, tokeniseDebug
+from src.normalise import normalise, normaliseDebug
 from src.guess import guess, guessDebug
 from src.extract import extract, extractDebug
 
 def main():
-    # Command line arguments recovery for debug mode
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--debug", type=str,
-            choices = ["tokenise", "guess", "extract"],
-            help = "enter debug mode for one of the user input analyse steps")
-    args = parser.parse_args()
+  # Command line arguments recovery for debug mode
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-d", "--debug", type=str,
+      choices = ["normalise", "guess", "extract"],
+      help = "enter debug mode for one of the user input analyse steps")
+  args = parser.parse_args()
 
-    if args.debug: # Launch debug mode if specified
-        if args.debug == "tokenise":
-            tokeniseDebug()
-        elif args.debug == "guess":
-            guessDebug()
-        elif args.debug == "extract":
-            extractDebug()
-    else: # Launch program as usual
-        print("Main not implemented yet.")
+  if args.debug: # Launch debug mode if specified
+    if args.debug == "normalise":
+      normaliseDebug()
+    elif args.debug == "guess":
+      guessDebug()
+    elif args.debug == "extract":
+      extractDebug()
+  else: # Launch program as usual
+    print("Main not implemented yet.")
 
 
 # Calling of main loop
 if __name__ == "__main__":
-   main() 
+  main() 
