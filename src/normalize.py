@@ -1,3 +1,7 @@
+"""
+This function normalise the input text to generate tokens and use them later on.
+"""
+
 import re
 
 def normalize(sent):

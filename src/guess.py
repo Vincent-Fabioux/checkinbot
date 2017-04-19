@@ -17,13 +17,13 @@ keywords["HI"] = ["hi", "hello", "good morning", "good afternoon",
 keywords["BYE"] = ["goodbye", "good bye", "bye", "exit", "quit"]
 
 # To confirm informations or to confirm quitting the app
-keywords["YES"] = ["yes", "sure", "yes", "yeah", "yep"]
+keywords["YES"] = ["yes", "sure", "yeah", "yep","exactly","absolutely"]
 
 # To express disapproval
 keywords["NO"] = ["no", "nope", "never", "not"]
 
 # To express a mistake
-keywords["MISTAKE"] = ["sorry", "mean", "meant"]
+keywords["MISTAKE"] = ["sorry", "mean", "meant","oups"]
 
 # To highlight the following words (increase their weight)
 keywords["ADVERB"] = ["certainly", "absolutely"]
@@ -32,10 +32,13 @@ keywords["ADVERB"] = ["certainly", "absolutely"]
 keywords["GENERIC"] = ["book", "order", "flight"]
 
 # Keywords related to departure
-keywords["DEP"] = ["from"]
+keywords["DEP"] = ["from", "departure"]
 
 # Keywords related to arrival
-keywords["ARR"] = ["to"]
+keywords["ARR"] = ["to","arrival","arrive","land"]
+
+#keywords that express thanks
+keywords["THANKS"] = ["thanks", "thank you"]
 
 
 def guess(words, data, question):
