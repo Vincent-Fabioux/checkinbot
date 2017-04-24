@@ -9,8 +9,10 @@ def extract(sentence):
     days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
     indication = {'day' : 1, 'days' : 1, 'week' : 7, 'weeks' : 7, 'months' : 365/12, 'month' : 365/12, 'year' : 365, 'years' :365}
     month = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+    regexMonths = r'(january|february|march|april|may|june|july|august|september|october|november|december)'
+    
+    # Récuperation des lieux depuis les fichiers contenant les villes et les pays
     places = getCountries() + getCities()
-
 
     # <----ELEMENTS SIMPLES---->
     
@@ -86,17 +88,17 @@ def extract(sentence):
     sentence = re.sub(regexInterval,r'IH-\1\2', sentence)
     
     
-    
     # <----DATES---->
     
     # Regexs pour les dates (a finir)
     regexDMY = r'(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})'
     regexMY = r'(\d{1,2})\s*\/\s*(\d{4})'
     regexDM = r'(\d{1,2})\s*\/\s*(\d{1,2})'
-    regexCompleteDate = r''
-    regexMonth = r''
+    regexCompleteDate = r'(\d{1,2})\s*(th)?\s*(of)?\s*' + regexMonths + r'\s*(\d{4})'
+    regexMonth = r'(\d{1,2})\s*(th)?\s*(of)?\s*' + regexMonths
     regexFormatDate = r'(D-(\d{1,2})(\d{1,2})(\d{4}))'
-    
+    regexFormatDate2 = r'(D-(\d{1,2})-'+ regexMonths + r'-?(\d{4})?)'
+        
     # Application des regexs
     sentence = re.sub(regexDMY, r'D-\1\2\3', sentence)
     sentence = re.sub(regexMY, r'D-01\1\2', sentence)
@@ -109,6 +111,20 @@ def extract(sentence):
       for match in matchs:
         if len(match) > 3:
           sentence = re.sub(match[0],'H-' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
+    
+    # Applications des regexs avec les mois écris en lettres
+    sentence = re.sub(regexCompleteDate, r'D-\1-\4-\5', sentence)
+    sentence = re.sub(regexMonth, r'D-\1-\4', sentence)
+    matchs = re.findall(regexFormatDate2, sentence)
+    if matchs:
+      for match in matchs:
+        if len(match) > 3:
+          if match[3]:
+            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + match[3].zfill(4), sentence)
+          else:
+            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + str(date.today().year).zfill(2), sentence)
+    
+    
     
     # Retour de la phrase modifiée
     return sentence
