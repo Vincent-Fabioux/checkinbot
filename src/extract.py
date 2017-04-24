@@ -1,12 +1,9 @@
-import mysql.connector
 import re
+import os.path
 import datetime
-from datetime import date
-from datetime import time
+from datetime import date 
 
-def extract(listTokens):
-    # Création de la phrase
-    sentence = ' '.join(listTokens)
+def extract(sentence):
 
     # Initialisation des listes connues
     days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
@@ -14,27 +11,27 @@ def extract(listTokens):
     month = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
     places = getCountries() + getCities()
 
+
+    # <----ELEMENTS SIMPLES---->
+    
     for element in sentence.split():
-      # Ajout des éléments de lieux
-      if element in places:
-        sentence = re.sub(element, "P-" + element, sentence)
       # Ajout des éléments d'heures spécifiques
-      elif element == "morning":
-        sentence = re.sub("morning","MOD- 05:00:0012:00:00", sentence)
+      if element == "morning":
+        sentence = re.sub("morning","MOD-050000120000", sentence)
       elif element == "afternoon":
-        sentence = re.sub("afternoon","MOD- 12:00:00-17:00:00", sentence)
+        sentence = re.sub("afternoon","MOD-120000170000", sentence)
       elif element == "evening":
-        sentence = re.sub("evening","MOD- 17:00:00-21:00:00", sentence)
+        sentence = re.sub("evening","MOD-170000210000", sentence)
       elif element == "night":
-        sentence = re.sub("night","MOD- 21:00:00-05:00:00", sentence)
+        sentence = re.sub("night","MOD-210000050000", sentence)
       elif element == "midnight":
-       sentence = re.sub("midnight","H- 00:00:00", sentence)
+       sentence = re.sub("midnight","H-000000", sentence)
       elif element == "noon":
-        sentence = re.sub("noon","H- 12:00:00", sentence)
+        sentence = re.sub("noon","H-120000", sentence)
       elif element == "today":
-        sentence = re.sub("today","D- "+ str(date.today().day) + "/" + str(date.today().month) + "/" + str(date.today().year), sentence)  
+        sentence = re.sub("today","D-"+ str(date.today().day).zfill(2)  + str(date.today().month).zfill(2)  + str(date.today().year).zfill(4) , sentence)  
       elif element == "tomorrow":
-        sentence = re.sub("tomorrow","D- "+ str(int(date.today().day + 1)) + "/" + str(date.today().month) + "/" + str(date.today().year), sentence)
+        sentence = re.sub("tomorrow","D-"+ str(int(date.today().day + 1)).zfill(2)  + str(date.today().month).zfill(2)  + str(date.today().year).zfill(4) , sentence)
       # Ajout des éléments de dates concernant les jours de la semaine (du type Monday, Tuesday)
       elif element in days:
         regex = r'((next\s*)?' + element + ')'
@@ -43,48 +40,77 @@ def extract(listTokens):
       elif element in indication.keys():
         regex= r'((next\s*)?\s*(\d)?\s*' + element + ')'
         sentence = re.sub(regex, calculateDateIndication(indication.get(element), regex, element, sentence),sentence)
-      
     
-     # Heures de la forme 16:00:00 a.m
-    regex = r'(?:^|\s)(\d{1,2})\s*:(\s*\d{1,2}):(\s*\d{1,2})\s*([.]?(a|p)\s*[.]?\s*m[.]?)?[^\d:]'
-    matchs = re.findall(regex, sentence)
+    
+    # <----LIEUX---->
+    
+    # Ajout des éléments de lieux
+    for place in places:
+      sentence = re.sub(place.lower(), "P-" + place.replace(" ", "-"), sentence)
+    
+    
+    # <----HEURES---->
+    
+    # Regexs pour les heures
+    regexThreeDigits = '(\d{1,2})\s*:(\s*\d{1,2})\s*:(\s*\d{1,2})\s*'
+    regexTwoDigits = '(\d{1,2})\s*:(\s*\d{1,2})\s*'
+    regexOneDigit = '(\d{1,2})\s*'
+    regexFormatHour = r'((H|HPM)-(\d{1,2}) (\d{1,2}) (\d{1,2}))' 
+    
+    # Heures de la forme 16:00:00 am
+    sentence = re.sub(r'(' + regexThreeDigits + 'am)',r'H-\2 \3 \4', sentence)
+    sentence = re.sub(r'(' + regexThreeDigits + 'pm)',r'HPM-\2 \3 \4', sentence)
+    sentence = re.sub(r'(' + regexThreeDigits + ')',r'H-\2 \3 \4 ', sentence)
+    
+    # Heures de la forme 16:00 am
+    sentence = re.sub(r'(' + regexTwoDigits + 'am)',r'H-\2 \3 00', sentence)
+    sentence = re.sub(r'(' + regexTwoDigits + 'pm)',r'HPM-\2 \3 00', sentence)
+    sentence = re.sub(r'(' + regexTwoDigits + ')',r'H-\2 \3 00 ', sentence)
+    
+    # Heures de la forme 16 am
+    sentence = re.sub(r'(' + regexOneDigit +'am)',r'H-\2 00 00', sentence)
+    sentence = re.sub(r'(' + regexOneDigit +'pm)',r'HPM-\2 00 00', sentence)
+    
+    # Convertir les heures dans le bon format (c'est à dire mettre deux digits quand il n'y en a pas)
+    matchs = re.findall(regexFormatHour, sentence)
+    if matchs:
+      for match in matchs:
+        if len(match) > 4:
+          if match[1] == "HPM":
+            sentence = re.sub(match[0],'H-' + (str(int(match[2]) + 12)).zfill(2)  + match[3].zfill(2)  + match[4].zfill(2), sentence)
+          else:
+            sentence = re.sub(match[0],'H-' + match[2].zfill(2)  + match[3].zfill(2)  + match[4].zfill(2), sentence) 
+    
+    # Intervalles d'heures
+    regexInterval = r'H-(\d{1,2}\d{1,2}\d{1,2})\s*-\s*H-(\d{1,2}\d{1,2}\d{1,2})'
+    sentence = re.sub(regexInterval,r'IH-\1\2', sentence)
+    
+    
+    
+    # <----DATES---->
+    
+    # Regexs pour les dates (a finir)
+    regexDMY = r'(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})'
+    regexMY = r'(\d{1,2})\s*\/\s*(\d{4})'
+    regexDM = r'(\d{1,2})\s*\/\s*(\d{1,2})'
+    regexCompleteDate = r''
+    regexMonth = r''
+    regexFormatDate = r'(D-(\d{1,2})(\d{1,2})(\d{4}))'
+    
+    # Application des regexs
+    sentence = re.sub(regexDMY, r'D-\1\2\3', sentence)
+    sentence = re.sub(regexMY, r'D-01\1\2', sentence)
+    sentence = re.sub (regexDM, r'D-\1\2 ' + str(date.today().year), sentence)
+    sentence = re.sub (r'D-(\d{1,2})(\d{1,2})\s*(\d{1,2})', r'D-\1\2\3', sentence)
+    
+    # Convertir les dates dans le bon format
+    matchs = re.findall(regexFormatDate, sentence)
     if matchs:
       for match in matchs:
         if len(match) > 3:
-          if re.search(r'a', match[3]):
-            sentence = re.sub(regex," H-" + match[0] + ":" + match[1] + ":" + match[2]+ " ", sentence)
-          elif re.search(r'p', match[3]):
-            sentence = re.sub(regex," H-" + str(int(match[0]) + 12) + ":" + match[1] + ":" + match[2]+ " ", sentence)
-          else:
-            sentence = re.sub(regex," H-" + match[0] + ":" + match[1] + ":" + match[2] + " ", sentence)
+          sentence = re.sub(match[0],'H-' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
     
-    # Heures de la forme 16:00 a.m
-    regex = r'(?:^|\s)(\d{1,2})\s*:(\s*\d{1,2})[^\d:]\s*([.]?(a|p)\s*[.]?\s*m[.]?)?'
-    matchs = re.findall(regex, sentence)
-    if matchs:
-      for match in matchs:
-        if len(match) > 3:
-          print (match)
-          if re.search(r'a', match[3]):
-            sentence = re.sub(regex," H-" + match[0] + ":" + match[1] +":00", sentence)
-          elif re.search(r'p', match[3]):
-            sentence = re.sub(regex," H-" + str(int(match[0]) + 12) + ":" + match[1] + ":00", sentence)
-            print (str(int(match[0]) + 12))
-          else:
-            sentence = re.sub(regex," H-" + match[0] + ":" + match[1] + ":00", sentence)
-    
-    
-    # Heures de la forme 16 a.m
-    regex = r'([0-9]{1,2})\s*([.]?(a|p)\s*[.]?\s*m[.]?)'
-    matchs = re.findall(regex, sentence)
-    for match in matchs:
-      if match:
-        if len(match) > 1:
-          if re.search(r'a', match[1]):
-            sentence = re.sub(regex,"H-" + match[0] + ":00:00", sentence)
-          elif re.search(r'p', match[1]):
-            sentence = re.sub(regex,"H-" + str(int(match[0]) + 12) + ":00:00", sentence)
-    
+    # Retour de la phrase modifiée
     return sentence
 
 def extractDebug():
@@ -95,7 +121,7 @@ def calculateDateDay(regex, element, sentence):
   days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
   while d.weekday() != days.index(element):
     d += datetime.timedelta(1)
-  day = str(d.day) + "/" + str(d.month) + "/" + str(d.year)
+  day = str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
   match = re.search(regex, sentence)
   if match:
     if match.group(2):
@@ -109,32 +135,22 @@ def calculateDateIndication(typeDate, regex, element, sentence):
     if match.group(2):
       if match.group(3):
         d = datetime.date.today() + datetime.timedelta(typeDate * int(match.group(3)))
-        return " ND-" + str(d.day) + "/" + str(d.month) + "/" + str(d.year)
+        return " ND-" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
       else:
         d = datetime.date.today() + datetime.timedelta(typeDate)
-        return " ND-" + str(d.day) + "/" + str(d.month) + "/" + str(d.year)
+        return " ND-" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
     elif match.group(3):
       d = datetime.date.today() + datetime.timedelta(typeDate * int(match.group(3)))
-      return " D-" + str(d.day) + "/" + str(d.month) + "/" + str(d.year)
+      return " D-" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
   
 def getCountries():
-    countries = []
-    conn = mysql.connector.connect(host="localhost",user="root",password="root", database="flights", unix_socket="/opt/lampp/var/mysql/mysql.sock")
-    cursor = conn.cursor()
-    cursor.execute("SELECT name FROM countries")
-    rows = cursor.fetchall()
-    for row in rows:
-        countries.append(row[0].lower())
-    conn.close()
-    return countries;
+  with open(os.path.dirname(__file__) + "/../data/countries.txt") as f:
+    countries = f.readlines()
+  content = [x.strip() for x in countries]
+  return content
     
 def getCities():
-    cities = []
-    conn = mysql.connector.connect(host="localhost",user="root",password="root", database="flights", unix_socket="/opt/lampp/var/mysql/mysql.sock")
-    cursor = conn.cursor()
-    cursor.execute("SELECT name FROM cities")
-    rows = cursor.fetchall()
-    for row in rows:
-        cities.append(row[0].lower())
-    conn.close()
-    return cities;
+  with open(os.path.dirname(__file__) + "/../data/cities.txt") as f:
+    countries = f.readlines()
+  content = [x.strip() for x in countries] 
+  return content
