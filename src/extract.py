@@ -112,20 +112,20 @@ def extract(sentence):
         if len(match) > 3:
           sentence = re.sub(match[0],'H-' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
     
-    #~ # Applications des regexs avec les mois écris en lettres
-    #~ sentence = re.sub(regexCompleteDate, r'D-\1-\4-\5', sentence)
-    #~ sentence = re.sub(regexMonth, r'D-\1-\4', sentence)
-    #~ matchs = re.findall(regexFormatDate2, sentence)
-    #~ if matchs:
-      #~ for match in matchs:
-        #~ if len(match) > 3:
-          #~ if match[3]:
-            #~ sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + match[3].zfill(4), sentence)
-          #~ else:
-            #~ sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + str(date.today().year).zfill(2), sentence)
-    #~ 
-    #~ 
-    #~ 
+    # Applications des regexs avec les mois écris en lettres
+    sentence = re.sub(regexCompleteDate, r'D-\1-\4-\5', sentence)
+    sentence = re.sub(regexMonth, r'D-\1-\4', sentence)
+    matchs = re.findall(regexFormatDate2, sentence)
+    if matchs:
+      for match in matchs:
+        if len(match) > 3:
+          if match[3]:
+            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + match[3].zfill(4), sentence)
+          else:
+            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + str(date.today().year).zfill(2), sentence)
+    
+    
+    
     # Retour de la phrase modifiée
     return sentence
 
