@@ -14,7 +14,7 @@ __contact__ = "Vincent Fabioux <vincent.fabioux@u-psud.fr>"
 
 import argparse
 
-from src.normalise import normalise, normaliseDebug
+from src.normalize import normalize, normalizeDebug
 from src.guess import guess, guessDebug
 from src.extract import extract, extractDebug
 
@@ -22,13 +22,13 @@ def main():
   # Command line arguments recovery for debug mode
   parser = argparse.ArgumentParser()
   parser.add_argument("-d", "--debug", type=str,
-      choices = ["normalise", "guess", "extract"],
+      choices = ["normalize", "guess", "extract"],
       help = "enter debug mode for one of the user input analyse steps")
   args = parser.parse_args()
 
   if args.debug: # Launch debug mode if specified
-    if args.debug == "normalise":
-      normaliseDebug()
+    if args.debug == "normalize":
+      normalizeDebug()
     elif args.debug == "guess":
       guessDebug()
     elif args.debug == "extract":
