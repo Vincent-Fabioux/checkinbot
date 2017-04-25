@@ -19,13 +19,13 @@ def extract(sentence):
     for element in sentence.split():
       # Ajout des éléments d'heures spécifiques
       if element == "morning":
-        sentence = re.sub("morning","MOD-050000120000", sentence)
+        sentence = re.sub("morning","MO-050000120000", sentence)
       elif element == "afternoon":
-        sentence = re.sub("afternoon","MOD-120000170000", sentence)
+        sentence = re.sub("afternoon","MO-120000170000", sentence)
       elif element == "evening":
-        sentence = re.sub("evening","MOD-170000210000", sentence)
+        sentence = re.sub("evening","MO-170000210000", sentence)
       elif element == "night":
-        sentence = re.sub("night","MOD-210000050000", sentence)
+        sentence = re.sub("night","MO-210000050000", sentence)
       elif element == "midnight":
        sentence = re.sub("midnight","H-000000", sentence)
       elif element == "noon":
@@ -88,7 +88,7 @@ def extract(sentence):
     sentence = re.sub(regexInterval,r'IH-\1\2', sentence)
     
     
-    # <----DATES---->
+    #~ # <----DATES---->
     
     # Regexs pour les dates (a finir)
     regexDMY = r'(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})'
@@ -112,25 +112,26 @@ def extract(sentence):
         if len(match) > 3:
           sentence = re.sub(match[0],'H-' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
     
-    # Applications des regexs avec les mois écris en lettres
-    sentence = re.sub(regexCompleteDate, r'D-\1-\4-\5', sentence)
-    sentence = re.sub(regexMonth, r'D-\1-\4', sentence)
-    matchs = re.findall(regexFormatDate2, sentence)
-    if matchs:
-      for match in matchs:
-        if len(match) > 3:
-          if match[3]:
-            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + match[3].zfill(4), sentence)
-          else:
-            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + str(date.today().year).zfill(2), sentence)
-    
-    
-    
+    #~ # Applications des regexs avec les mois écris en lettres
+    #~ sentence = re.sub(regexCompleteDate, r'D-\1-\4-\5', sentence)
+    #~ sentence = re.sub(regexMonth, r'D-\1-\4', sentence)
+    #~ matchs = re.findall(regexFormatDate2, sentence)
+    #~ if matchs:
+      #~ for match in matchs:
+        #~ if len(match) > 3:
+          #~ if match[3]:
+            #~ sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + match[3].zfill(4), sentence)
+          #~ else:
+            #~ sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + str(date.today().year).zfill(2), sentence)
+    #~ 
+    #~ 
+    #~ 
     # Retour de la phrase modifiée
     return sentence
 
 def extractDebug():
     print ("A vous de tester des phrases : Rentrez les sous forme d'une liste de tokens")
+    print (extract("this morning"))
 
 def calculateDateDay(regex, element, sentence):
   d = datetime.date.today()
