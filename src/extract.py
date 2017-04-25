@@ -19,21 +19,21 @@ def extract(sentence):
     for element in sentence.split():
       # Ajout des éléments d'heures spécifiques
       if element == "morning":
-        sentence = re.sub("morning","MO-050000120000", sentence)
+        sentence = re.sub("morning","MO_050000120000", sentence)
       elif element == "afternoon":
-        sentence = re.sub("afternoon","MO-120000170000", sentence)
+        sentence = re.sub("afternoon","MO_120000170000", sentence)
       elif element == "evening":
-        sentence = re.sub("evening","MO-170000210000", sentence)
+        sentence = re.sub("evening","MO_170000210000", sentence)
       elif element == "night":
-        sentence = re.sub("night","MO-210000050000", sentence)
+        sentence = re.sub("night","MO_210000050000", sentence)
       elif element == "midnight":
-       sentence = re.sub("midnight","H-000000", sentence)
+       sentence = re.sub("midnight","H_000000", sentence)
       elif element == "noon":
-        sentence = re.sub("noon","H-120000", sentence)
+        sentence = re.sub("noon","H_120000", sentence)
       elif element == "today":
-        sentence = re.sub("today","D-"+ str(date.today().day).zfill(2)  + str(date.today().month).zfill(2)  + str(date.today().year).zfill(4) , sentence)  
+        sentence = re.sub("today","D_"+ str(date.today().day).zfill(2)  + str(date.today().month).zfill(2)  + str(date.today().year).zfill(4) , sentence)  
       elif element == "tomorrow":
-        sentence = re.sub("tomorrow","D-"+ str(int(date.today().day + 1)).zfill(2)  + str(date.today().month).zfill(2)  + str(date.today().year).zfill(4) , sentence)
+        sentence = re.sub("tomorrow","D_"+ str(int(date.today().day + 1)).zfill(2)  + str(date.today().month).zfill(2)  + str(date.today().year).zfill(4) , sentence)
       # Ajout des éléments de dates concernant les jours de la semaine (du type Monday, Tuesday)
       elif element in days:
         regex = r'((next\s*)?' + element + ')'
@@ -48,7 +48,7 @@ def extract(sentence):
     
     # Ajout des éléments de lieux
     for place in places:
-      sentence = re.sub(place.lower(), "P-" + place.replace(" ", "-"), sentence)
+      sentence = re.sub(place.lower(), "P_" + place.replace(" ", "_"), sentence)
     
     
     # <----HEURES---->
@@ -85,7 +85,7 @@ def extract(sentence):
     
     # Intervalles d'heures
     regexInterval = r'H-(\d{1,2}\d{1,2}\d{1,2})\s*-\s*H-(\d{1,2}\d{1,2}\d{1,2})'
-    sentence = re.sub(regexInterval,r'IH-\1\2', sentence)
+    sentence = re.sub(regexInterval,r'HI-\1\2', sentence)
     
     
     #~ # <----DATES---->
