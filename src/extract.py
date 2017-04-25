@@ -12,7 +12,7 @@ def extract(sentence):
     regexMonths = r'(january|february|march|april|may|june|july|august|september|october|november|december)'
     
     # Récuperation des lieux depuis les fichiers contenant les villes et les pays
-    places = getCountries() + getCities()
+    places = getCities()
 
     # <----ELEMENTS SIMPLES---->
     
@@ -57,21 +57,21 @@ def extract(sentence):
     regexThreeDigits = '(\d{1,2})\s*:(\s*\d{1,2})\s*:(\s*\d{1,2})\s*'
     regexTwoDigits = '(\d{1,2})\s*:(\s*\d{1,2})\s*'
     regexOneDigit = '(\d{1,2})\s*'
-    regexFormatHour = r'((H|HPM)-(\d{1,2}) (\d{1,2}) (\d{1,2}))' 
+    regexFormatHour = r'((H|HPM)_(\d{1,2}) (\d{1,2}) (\d{1,2}))' 
     
     # Heures de la forme 16:00:00 am
-    sentence = re.sub(r'(' + regexThreeDigits + 'am)',r'H-\2 \3 \4', sentence)
-    sentence = re.sub(r'(' + regexThreeDigits + 'pm)',r'HPM-\2 \3 \4', sentence)
-    sentence = re.sub(r'(' + regexThreeDigits + ')',r'H-\2 \3 \4 ', sentence)
+    sentence = re.sub(r'(' + regexThreeDigits + 'am)',r'H_\2 \3 \4', sentence)
+    sentence = re.sub(r'(' + regexThreeDigits + 'pm)',r'HPM_\2 \3 \4', sentence)
+    sentence = re.sub(r'(' + regexThreeDigits + ')',r'H_\2 \3 \4 ', sentence)
     
     # Heures de la forme 16:00 am
-    sentence = re.sub(r'(' + regexTwoDigits + 'am)',r'H-\2 \3 00', sentence)
-    sentence = re.sub(r'(' + regexTwoDigits + 'pm)',r'HPM-\2 \3 00', sentence)
-    sentence = re.sub(r'(' + regexTwoDigits + ')',r'H-\2 \3 00 ', sentence)
+    sentence = re.sub(r'(' + regexTwoDigits + 'am)',r'H_\2 \3 00', sentence)
+    sentence = re.sub(r'(' + regexTwoDigits + 'pm)',r'HPM_\2 \3 00', sentence)
+    sentence = re.sub(r'(' + regexTwoDigits + ')',r'H_\2 \3 00 ', sentence)
     
     # Heures de la forme 16 am
-    sentence = re.sub(r'(' + regexOneDigit +'am)',r'H-\2 00 00', sentence)
-    sentence = re.sub(r'(' + regexOneDigit +'pm)',r'HPM-\2 00 00', sentence)
+    sentence = re.sub(r'(' + regexOneDigit +'am)',r'H_\2 00 00', sentence)
+    sentence = re.sub(r'(' + regexOneDigit +'pm)',r'HPM_\2 00 00', sentence)
     
     # Convertir les heures dans le bon format (c'est à dire mettre deux digits quand il n'y en a pas)
     matchs = re.findall(regexFormatHour, sentence)
@@ -79,13 +79,13 @@ def extract(sentence):
       for match in matchs:
         if len(match) > 4:
           if match[1] == "HPM":
-            sentence = re.sub(match[0],'H-' + (str(int(match[2]) + 12)).zfill(2)  + match[3].zfill(2)  + match[4].zfill(2), sentence)
+            sentence = re.sub(match[0],'H_' + (str(int(match[2]) + 12)).zfill(2)  + match[3].zfill(2)  + match[4].zfill(2), sentence)
           else:
-            sentence = re.sub(match[0],'H-' + match[2].zfill(2)  + match[3].zfill(2)  + match[4].zfill(2), sentence) 
+            sentence = re.sub(match[0],'H_' + match[2].zfill(2)  + match[3].zfill(2)  + match[4].zfill(2), sentence) 
     
     # Intervalles d'heures
-    regexInterval = r'H-(\d{1,2}\d{1,2}\d{1,2})\s*-\s*H-(\d{1,2}\d{1,2}\d{1,2})'
-    sentence = re.sub(regexInterval,r'HI-\1\2', sentence)
+    regexInterval = r'H_(\d{1,2}\d{1,2}\d{1,2})\s*_\s*H_(\d{1,2}\d{1,2}\d{1,2})'
+    sentence = re.sub(regexInterval,r'HI_\1\2', sentence)
     
     
     #~ # <----DATES---->
@@ -96,33 +96,33 @@ def extract(sentence):
     regexDM = r'(\d{1,2})\s*\/\s*(\d{1,2})'
     regexCompleteDate = r'(\d{1,2})\s*(th)?\s*(of)?\s*' + regexMonths + r'\s*(\d{4})'
     regexMonth = r'(\d{1,2})\s*(th)?\s*(of)?\s*' + regexMonths
-    regexFormatDate = r'(D-(\d{1,2})(\d{1,2})(\d{4}))'
-    regexFormatDate2 = r'(D-(\d{1,2})-'+ regexMonths + r'-?(\d{4})?)'
+    regexFormatDate = r'(D_(\d{1,2})(\d{1,2})(\d{4}))'
+    regexFormatDate2 = r'(D_(\d{1,2})_'+ regexMonths + r'_?(\d{4})?)'
         
     # Application des regexs
-    sentence = re.sub(regexDMY, r'D-\1\2\3', sentence)
-    sentence = re.sub(regexMY, r'D-01\1\2', sentence)
-    sentence = re.sub (regexDM, r'D-\1\2 ' + str(date.today().year), sentence)
-    sentence = re.sub (r'D-(\d{1,2})(\d{1,2})\s*(\d{1,2})', r'D-\1\2\3', sentence)
+    sentence = re.sub(regexDMY, r'D_\1\2\3', sentence)
+    sentence = re.sub(regexMY, r'D_01\1\2', sentence)
+    sentence = re.sub (regexDM, r'D_\1\2 ' + str(date.today().year), sentence)
+    sentence = re.sub (r'D_(\d{1,2})(\d{1,2})\s*(\d{1,2})', r'D_\1\2\3', sentence)
     
     # Convertir les dates dans le bon format
     matchs = re.findall(regexFormatDate, sentence)
     if matchs:
       for match in matchs:
         if len(match) > 3:
-          sentence = re.sub(match[0],'H-' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
+          sentence = re.sub(match[0],'H_' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
     
     # Applications des regexs avec les mois écris en lettres
-    sentence = re.sub(regexCompleteDate, r'D-\1-\4-\5', sentence)
-    sentence = re.sub(regexMonth, r'D-\1-\4', sentence)
+    sentence = re.sub(regexCompleteDate, r'D_\1_\4_\5', sentence)
+    sentence = re.sub(regexMonth, r'D_\1_\4', sentence)
     matchs = re.findall(regexFormatDate2, sentence)
     if matchs:
       for match in matchs:
         if len(match) > 3:
           if match[3]:
-            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + match[3].zfill(4), sentence)
+            sentence = re.sub(match[0],'D_' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + match[3].zfill(4), sentence)
           else:
-            sentence = re.sub(match[0],'D-' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + str(date.today().year).zfill(2), sentence)
+            sentence = re.sub(match[0],'D_' + match[1].zfill(2)  + str(month.index(match[2]) + 1).zfill(2)  + str(date.today().year).zfill(2), sentence)
     
     
     
@@ -142,9 +142,9 @@ def calculateDateDay(regex, element, sentence):
   match = re.search(regex, sentence)
   if match:
     if match.group(2):
-      return "ND-" + day
+      return "ND_" + day
     else:
-      return "D-" + day
+      return "D_" + day
   
 def calculateDateIndication(typeDate, regex, element, sentence):
   match = re.search(regex, sentence)
@@ -152,19 +152,13 @@ def calculateDateIndication(typeDate, regex, element, sentence):
     if match.group(2):
       if match.group(3):
         d = datetime.date.today() + datetime.timedelta(typeDate * int(match.group(3)))
-        return " ND-" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
+        return " ND_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
       else:
         d = datetime.date.today() + datetime.timedelta(typeDate)
-        return " ND-" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
+        return " ND_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
     elif match.group(3):
       d = datetime.date.today() + datetime.timedelta(typeDate * int(match.group(3)))
-      return " D-" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
-  
-def getCountries():
-  with open(os.path.dirname(__file__) + "/../data/countries.txt") as f:
-    countries = f.readlines()
-  content = [x.strip() for x in countries]
-  return content
+      return " D_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
     
 def getCities():
   with open(os.path.dirname(__file__) + "/../data/cities.txt") as f:
