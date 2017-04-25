@@ -85,7 +85,7 @@ def extract(sentence):
     
     # Intervalles d'heures
     regexInterval = r'H_(\d{1,2}\d{1,2}\d{1,2})\s*_\s*H_(\d{1,2}\d{1,2}\d{1,2})'
-    sentence = re.sub(regexInterval,r'HI_\1\2', sentence)
+    sentence = re.sub(regexInterval,r'MO_\1\2', sentence)
     
     
     #~ # <----DATES---->
