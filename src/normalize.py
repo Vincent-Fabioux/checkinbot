@@ -2,5 +2,5 @@ def normalise():
     print("Normalise not implemented yet.")
 
 
-def normalise():
+def normaliseDebug():
     tokenise()
