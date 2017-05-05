@@ -130,8 +130,3 @@ def transform(word):
     temp = re.search(r'^(H_(\d{6}))$', word).group(0)
     return (temp[2:4] + ":" + temp[4:6] + ":" + temp[6:8])
 
-answerDebug()
-
-if __name__ == "__main__":
-	answerDebug()
-

@@ -56,7 +56,6 @@ def guess(sent, data):
 
   # Unknown words become "UNK"
   sent = re.sub(r"\b[^A-Z ]+\b", "UNK", sent)
-  print(sent)
 
   # Some values have higher odds of being defined by the user:
   # - Values not already defined in previous sentences
