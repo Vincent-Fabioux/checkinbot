@@ -19,7 +19,7 @@ answers["HIBOOL"] = [False]
 
 def answer(data,modified = None):
 
-""" Possible que data contienne une clé "special" contenant :
+""" Data can contain a key named 'special' with values :
 hi,bye,yes,no,mistake
 """
 	answer = ""
