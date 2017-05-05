@@ -56,6 +56,7 @@ def guess(sent, data):
 
   # Unknown words become "UNK"
   sent = re.sub(r"\b[^A-Z ]+\b", "UNK", sent)
+  print(sent)
 
   # Some values have higher odds of being defined by the user:
   # - Values not already defined in previous sentences
@@ -70,25 +71,29 @@ def guess(sent, data):
   words = sent.split(" ")
 
   # Odds and position of values
-  odds = {}
+  odds = []
   dataPos = []
   for i in range(0, len(words)):
     if re.match("^[A-Z]+_", words[i]):
       dataPos.append(i)
-      odds.update(calculateOdds(words, i))
+      odds.append(calculateOdds(words, i, data))
 
 
   # Chosing where values goes according to odds
-  result = {}
   for i in range(0, len(dataPos)):
-    value = words[dataPos[i]].split("_")
-    if value[0] == "P":
-      result.update(fillMaxOdds(odds, value[1], ["dep_loc", "arr_loc"]))
+    value = words[dataPos[i]]
+    start = value.split("_")[0]
+    if start == "P":
+      data.update(fillMaxOdds(odds[i], value, ["dep_loc", "arr_loc"]))
+    elif start == "D" or start == "NDATE":
+      data.update(fillMaxOdds(odds[i], value, ["dep_date", "arr_date"]))
+    elif start == "H" or start == "MO":
+      data.update(fillMaxOdds(odds[i], value, ["dep_hour", "arr_hour"]))
 
 # Calculate odds for the nth word in a sentence according to previous words
-def calculateOdds(words, n):
+def calculateOdds(words, n, oddsModel):
   odds = {}
-  result = {}
+  result = dict.fromkeys(oddsModel, 0)
 
   # Local odds multiplier: effect of distance over odds
   oddsMult = 1
@@ -106,12 +111,12 @@ def calculateOdds(words, n):
       oddsMult *= infDecrease
 
     for key, value in odds.items():
-      result[key] = result.get(key, 0) + value * oddsMult
+      result[key] += value * oddsMult
 
   return result
 
 
-# 
+# Maps a value with one of the possible keys according to the odds of each key
 def fillMaxOdds(odds, newValue, possible):
   maxOdds = None
   toFill = None
@@ -126,12 +131,26 @@ def fillMaxOdds(odds, newValue, possible):
     return {toFill: newValue}
 
 
+# Only for debugging purposes
 def guessDebug():
+  # Data before test
   data = {"dep_loc": None, "dep_date": None, "dep_hour": None,
       "arr_loc": None, "arr_date": None, "arr_hour": None}
-  testSentences = ["good morning !",
-      "i'd like to book a flight",
-      "from P_paris to P_dublin at D_030403"]
+
+  # Dynamic test
+  from src.normalize import normalize
+  from src.extract import extract
+  testSentences = [input("Enter a sentence to test: ")]
+  testSentences[0] = extract(normalize(testSentences[0]))
+
+  # If extract() or normalise() are not working properly, it is best to use
+  # hand made sentences rather than calling those functions
+  # testSentences = ["good morning !",
+  #    "i'd like to book a flight",
+  #    "from P_Paris to P_Dublin at D_030403"]
+
+  # Prints data after the tests
   for values in testSentences:
-    print(values)
-    print(guess(values, data))
+    print("=> " + values)
+    guess(values, data)
+    print(data)

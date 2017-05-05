@@ -2,8 +2,14 @@
 #coding: utf-8
 
 """
-Chatbot which mission is to help book flights.
-Long description here.
+checkinbot is a chatbot which mission is to help users book a flight.
+This program can understand basic informations about a flight such as
+the departure date and location and the arrival date and location.
+It then give the user corresponding flights according to a textfile
+database.
+
+A lot of features such as the price range selection, time sorting or
+
 
 Homepage and documentation: https://github.com/Vincent-Fabioux/checkinbot
 """
@@ -40,10 +46,11 @@ def main():
     checkinbot()
 
 
-# Main function of the program
+# Main program function
 def checkinbot():
   data = {"dep_loc": None, "dep_date": None, "dep_hour": None,
-      "arr_loc": None, "arr_date": None, "arr_hour": None}
+      "arr_loc": None, "arr_date": None, "arr_hour": None,
+      "special": None}
   
   run = True
   while(run):
