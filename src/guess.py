@@ -48,7 +48,7 @@ keywords["THANKS"] = ["thanks", "thank you"]
 infDecrease = 0.5
 
 
-def guess(sent, data, question):
+def guess(sent, data):
   # Replacement of known keywords with their defined key
   for key, values in keywords.items():
     for value in values:
@@ -66,8 +66,6 @@ def guess(sent, data, question):
       oddsMult[key] = 1
     else:
       oddsMult[key] = 2
-  if question != None:
-    oddsMult[question] = oddsMult[question] * 4
 
   words = sent.split(" ")
 
@@ -136,4 +134,4 @@ def guessDebug():
       "from P_paris to P_dublin at D_030403"]
   for values in testSentences:
     print(values)
-    print(guess(values, data, None))
+    print(guess(values, data))
