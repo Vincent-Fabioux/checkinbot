@@ -1,7 +1,16 @@
+"""
+This function answers to the user given inputs. Data is a dictionary that contains
+the informations about the flight such as departure location, arrival, etc. while
+modified is used to know if a given information has changed in Data.
+This function uses guess.py to evaluate the word that is weighting the most,
+as a way to try to grab the meaning of the inputed sentence.
+"""
+
 
 import re
 import random
 
+# This dictionary contains answers to most things that a user can say as an answer to one of our questions
 answers = {}
 
 answers["HI"] = ["Hello !", "Nice to meet you !", "Hi !","Welcome !"]
@@ -20,9 +29,9 @@ answers["HIBOOL"] = False
 def answer(data,modified = None):
 
 #Data can contain a key named 'special' with values hi,bye,yes,no,mistake
-
   answer = ""
 
+  # If the user says something like "Hello !", special will be set and we will first answer to that.
   if "special" in data:
     if data["special"] == "hi" and answers["HIBOOL"] == False:
       answer += random.choice(answers["HI"]) + ' '
@@ -45,6 +54,7 @@ def answer(data,modified = None):
       return True;
 
 
+  # If a setting relative to the flight has been changed, we ask for a confirmation
   if modified != None:
     answer += "You set your "
     if modified == "dep_loc":
@@ -58,6 +68,7 @@ def answer(data,modified = None):
 
     answer += " to " + data[modified] + ", is that correct ?"
 
+  # If nothing has been modified nor inputed relative to the flight, we give instructions
   elif modified == None and informationsMissing(data) != 0:
     if informationsMissing(data) == 4:
       answer += "Please provide the following informations to book your flight :\n"
@@ -72,6 +83,7 @@ def answer(data,modified = None):
     if data["arr_hour"] == None:
       answer += "- The arrival hour\n"
 
+  # If every informations relative to the flight are correct, we give the user a recap
   if modified == None and informationsMissing(data) == 0:
     answer += "As a recap, here are the informations you have inputed :\n"
     answer += "- Departure location : " + data["dep_loc"] +"\n"
