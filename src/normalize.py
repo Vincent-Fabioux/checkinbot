@@ -5,7 +5,7 @@ This function normalise the input text to generate tokens and use them later on.
 import re
 
 def normalize(sent):
-    special = ["m","ms","mr","dr","prof","sgt","lt","ltd","co","etc","i.e","e.g","st","d.c"]
+    special = ["m","ms","mr","dr","prof","sgt","lt","ltd","co","etc","i.e","e.g","st"]
     regex_cannot_precede = "(?:(?<!"+")(?<!".join(special)+"))"
     sent = sent.lower() #lower characters
     sent = re.sub("\'\'",r"\"", sent) #transform double simple quote into a normal quote
@@ -18,8 +18,11 @@ def normalize(sent):
     sent = re.sub("([\.\?\!\,\;]+)\s*(\w+)", r"\1 \2", sent) #add a space after a coma if the end of the text has not been reached
     sent = re.sub("("+regex_cannot_precede+")\s*([\.\?\!\,\;]+)", r"\1 \2", sent) #add a whitespace after a coma expect in special cases
     sent = re.sub("(.)^\.$", r"\1 .", sent)
+    sent = re.sub("d . c .", r"d.c.", sent) # normalize d.c. as in Washington D.C.
     return sent 
 
 
 def normalizeDebug():
-    print(normalize())
+    print(normalize("Washington D.C. or St. George's or Port Louis."))
+
+normalizeDebug()
