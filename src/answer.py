@@ -72,8 +72,10 @@ def answer(data,modified = None):
   elif modified == None and informationsMissing(data) != 0:
     if informationsMissing(data) == 4:
       answer += "Please provide the following informations to book your flight :\n"
-    else:
+    elif informationsMissing(data) > 1:
       answer += "The following informations are still missing :\n"
+    else:
+      answer += "This last information is mussing :\n"
     if data["dep_loc"] == None:
       answer += "- Your departure location\n"
     if data["arr_loc"] == None:
