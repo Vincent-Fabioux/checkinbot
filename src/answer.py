@@ -54,7 +54,7 @@ def answer(data):
       return True;
 
 # We give to the user a recap each time if he already inputed something
-  if informationsMissing(data) < len(data.keys()):
+  if informationsMissing(data) < 6:
     answer += "As a recap, here are the informations you have inputed :\n"
     if data["dep_loc"] != None:
       answer += "- Departure location : " + data["dep_loc"] + "\n"
@@ -71,7 +71,7 @@ def answer(data):
 
   # If nothing has been modified nor inputed relative to the flight, we give instructions
   if informationsMissing(data) > 0:
-    if informationsMissing(data) == len(data.keys()):
+    if informationsMissing(data) == 6:
       answer += "Please provide the following informations to book your flight :\n"
     elif informationsMissing(data) > 1 and (data["dep_loc"] == None or data["dep_date"] == None
     or data["arr_loc"] == None or data["arr_date"] == None):
@@ -95,14 +95,15 @@ def answer(data):
 
 def answerDebug():
   data = {"dep_loc": None, "dep_hour": None,
-    "arr_loc": None, "arr_hour": None, "special":"hi"}
+    "arr_loc": None, "arr_hour": None, "dep_date": None, "arr_date": None, "special":"hi"}
   Res = answer(data)
 
 
 def informationsMissing(data):
   count = 0
+  specials = {"hi","yes","no","mistake","bye"}
   for info in data.values():
-    if info == None:
+    if info == None and info not in specials:
       count = count + 1
 
   return count
