@@ -26,7 +26,7 @@ answers["MISTAKE"] = ["No problem.", "It's ok, one more time.", "Don't worry it 
 answers["HIBOOL"] = False
 
 
-def answer(data,modified = None):
+def answer(data):
 
 #Data can contain a key named 'special' with values hi,bye,yes,no,mistake
   answer = ""
@@ -53,45 +53,41 @@ def answer(data,modified = None):
       answer += random.choice(answers["MISTAKE"]) + ' '
       return True;
 
-
-  # If a setting relative to the flight has been changed, we ask for a confirmation
-  if modified != None:
-    answer += "You set your "
-    if modified == "dep_loc":
-      answer += "departure location"
-    elif modified == "arr_loc":
-      answer += "arrival location"
-    elif modified == "dep_hour":
-      answer += "departure hour"
-    elif modified == "arr_hour":
-      answer += "arrival hour"
-
-    answer += " to " + data[modified] + ", is that correct ?"
+# We give to the user a recap each time if he already inputed something
+  if informationsMissing(data) < 6:
+    answer += "As a recap, here are the informations you have inputed :\n"
+    if data["dep_loc"] != None:
+      answer += "- Departure location : " + data["dep_loc"] + "\n"
+    if data["dep_date"] != None and data["dep_hour"] == None:
+      answer += "- Departure date : " + data["dep_date"] + " at any hour\n"
+    elif data["dep_date"] != None and data["dep_hour"] != None:
+      answer += "- Departure date : " + data["dep_date"] + " at " + data["dep_hour"] + "\n"
+    if data["arr_loc"] != None:
+      answer += "- Arrival location : " + data["arr_loc"] + "\n"
+    if data["arr_date"] != None and data["arr_hour"] == None:
+      answer += "- Arrival date : " + data["arr_date"] + " at any hour\n"
+    elif data["arr_date"] != None and data["arr_hour"] != None:
+      answer += "- Arrival date : " + data["arr_date"] + " at " + data["arr_hour"] + "\n"
 
   # If nothing has been modified nor inputed relative to the flight, we give instructions
-  elif modified == None and informationsMissing(data) != 0:
-    if informationsMissing(data) == 4:
+  if informationsMissing(data) > 0:
+    if informationsMissing(data) == 6:
       answer += "Please provide the following informations to book your flight :\n"
-    elif informationsMissing(data) > 1:
+    elif informationsMissing(data) > 1 and (data["dep_loc"] == None or data["dep_date"] == None
+    or data["arr_loc"] == None or data["arr_date"] == None):
       answer += "The following informations are still missing :\n"
-    else:
-      answer += "This last information is mussing :\n"
     if data["dep_loc"] == None:
       answer += "- Your departure location\n"
+    if data["dep_date"] == None:
+      answer += "- The departure date\n"
+    if data["dep_hour"] == None:
+      answer += "- The departure hour (Optional)\n"
     if data["arr_loc"] == None:
       answer += "- Your arrival location\n"
-    if data["dep_hour"] == None:
-      answer += "- The departure hour\n"
+    if data["arr_date"] == None:
+      answer += "- The arrival date\n"
     if data["arr_hour"] == None:
-      answer += "- The arrival hour\n"
-
-  # If every informations relative to the flight are correct, we give the user a recap
-  if modified == None and informationsMissing(data) == 0:
-    answer += "As a recap, here are the informations you have inputed :\n"
-    answer += "- Departure location : " + data["dep_loc"] +"\n"
-    answer += "- Arrival location : " + data["arr_loc"] +"\n"
-    answer += "- Departure hour : " + data["dep_hour"] +"\n"
-    answer += "- Arrival hour : " + data["arr_hour"] +"\n"
+      answer += "- The arrival hour (Optional)\n"
 
   print(answer)
   return True  
@@ -99,14 +95,15 @@ def answer(data,modified = None):
 
 def answerDebug():
   data = {"dep_loc": None, "dep_hour": None,
-    "arr_loc": None, "arr_hour": None, "special":"hi"}
+    "arr_loc": None, "arr_hour": None, "dep_date": None, "arr_date": None, "special":"hi"}
   Res = answer(data)
 
 
 def informationsMissing(data):
   count = 0
+  specials = {"hi","yes","no","mistake","bye"}
   for info in data.values():
-    if info == None:
+    if info == None and info not in specials:
       count = count + 1
 
   return count

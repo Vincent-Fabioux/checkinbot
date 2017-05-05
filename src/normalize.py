@@ -5,7 +5,7 @@ This function normalise the input text to generate tokens and use them later on.
 import re
 
 def normalize(sent):
-    special = ["m","ms","mr","dr","prof","sgt","lt","ltd","co","etc","i.e","e.g"]
+    special = ["m","ms","mr","dr","prof","sgt","lt","ltd","co","etc","i.e","e.g","st","d.c"]
     regex_cannot_precede = "(?:(?<!"+")(?<!".join(special)+"))"
     sent = sent.lower() #lower characters
     sent = re.sub("\'\'",r"\"", sent) #transform double simple quote into a normal quote
