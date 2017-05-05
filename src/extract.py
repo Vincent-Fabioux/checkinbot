@@ -48,8 +48,13 @@ def extract(sentence):
     
     # Ajout des éléments de lieux
     for place in places:
-      sentence = re.sub(place.lower(), "P_" + place.replace(" ", "_"), sentence)
-    
+      if place.lower() in sentence:
+        temp = place.lower()
+        temp = temp.replace(" ", "1")
+        temp = temp.replace("_", "2")
+        temp = temp.replace("'", "3")
+        temp = temp.replace(".", "4")
+        sentence = re.sub(place.lower(), "P_" + temp, sentence)
     
     # <----HEURES---->
     
@@ -87,10 +92,9 @@ def extract(sentence):
     regexInterval = r'H_(\d{1,2}\d{1,2}\d{1,2})\s*_\s*H_(\d{1,2}\d{1,2}\d{1,2})'
     sentence = re.sub(regexInterval,r'MO_\1\2', sentence)
     
-    
     #~ # <----DATES---->
     
-    # Regexs pour les dates (a finir)
+    # Regexs pour les dates
     regexDMY = r'(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})'
     regexMY = r'(\d{1,2})\s*\/\s*(\d{4})'
     regexDM = r'(\d{1,2})\s*\/\s*(\d{1,2})'
@@ -110,7 +114,7 @@ def extract(sentence):
     if matchs:
       for match in matchs:
         if len(match) > 3:
-          sentence = re.sub(match[0],'H_' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
+          sentence = re.sub(match[0],'D_' + match[1].zfill(2)  + match[2].zfill(2)  + match[3].zfill(2), sentence) 
     
     # Applications des regexs avec les mois écris en lettres
     sentence = re.sub(regexCompleteDate, r'D_\1_\4_\5', sentence)
@@ -130,8 +134,16 @@ def extract(sentence):
     return sentence
 
 def extractDebug():
-    print ("A vous de tester des phrases : Rentrez les sous forme d'une liste de tokens")
-    print (extract("this morning"))
+  sentence = "washington d.c. or st. george's or port louis or in the morning or next monday or tuesday or at 5:42:56 pm"
+  print ("-->PHRASE : " + sentence)
+  result = extract("washington d.c. or st. george's or port louis or in the morning or next monday or tuesday or at 5:42:56 pm")
+  print ("--> Ce que recoit GUESS : " + result )
+  
+  wordList = re.sub("[^\w]", " ",  result).split()
+  for word in wordList:
+    if transform(word):
+      result = re.sub(word, transform(word), result)
+  print ("--> PHRASE FINALE : " + result)
 
 def calculateDateDay(regex, element, sentence):
   d = datetime.date.today()
@@ -142,7 +154,7 @@ def calculateDateDay(regex, element, sentence):
   match = re.search(regex, sentence)
   if match:
     if match.group(2):
-      return "ND_" + day
+      return "NDATE_" + day
     else:
       return "D_" + day
   
@@ -152,10 +164,10 @@ def calculateDateIndication(typeDate, regex, element, sentence):
     if match.group(2):
       if match.group(3):
         d = datetime.date.today() + datetime.timedelta(typeDate * int(match.group(3)))
-        return " ND_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
+        return " NDATE_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
       else:
         d = datetime.date.today() + datetime.timedelta(typeDate)
-        return " ND_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
+        return " NDATE_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
     elif match.group(3):
       d = datetime.date.today() + datetime.timedelta(typeDate * int(match.group(3)))
       return " D_" + str(d.day).zfill(2)  + str(d.month).zfill(2)  + str(d.year).zfill(4) 
@@ -165,3 +177,7 @@ def getCities():
     countries = f.readlines()
   content = [x.strip() for x in countries] 
   return content
+  
+  
+  
+  

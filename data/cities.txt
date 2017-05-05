@@ -1,4 +1,3 @@
-Capital City
 Abu Dhabi
 Abuja
 Accra
@@ -199,7 +198,7 @@ San Marino
 San Salvador
 Sana'a
 Santiago
-Valparaíso (legislative)
+Valparaíso
 Santo Domingo
 Săo Tomé
 Sarajevo
@@ -247,7 +246,7 @@ Vienna
 Vientiane
 Vilnius
 Warsaw
-Washington, D.C.
+Washington D.C.
 Wellington
 West Island
 Willemstad
