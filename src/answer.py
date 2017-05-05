@@ -8,7 +8,7 @@ answers["HI"] = ["Hello !", "Nice to meet you !", "Hi !"]
 
 answers["BYE"] = ["Good bye !", "Bye !"]
 
-answers["YES"] = ["Ok very nice.", "Understood.", "Perfect."]
+answers["YES"] = ["Ok very nice.", "Understood.", "Perfect.", "Ok fine."]
 
 answers["NO"] = ["", "Nice to meet you !", "Hi !"]
 
@@ -46,13 +46,37 @@ def answer(data,modified = None):
 
     answer += ", is that correct ?"
 
+  elif modified == None and informationsMissing(data) != 0:
+    if informationsMissing(data) == 4:
+      answer += "Please provide the following informations to book your flight :\n"
+    else:
+      answer += "The following informations are still missing :\n"
+    if data["dep_loc"] == None:
+      answer += "- Your departure location\n"
+    if data["arr_loc"] == None:
+      answer += "- Your arrival location\n"
+    if data["dep_hour"] == None:
+      answer += "- The departure hour\n"
+    if data["arr_hour"] == None:
+      answer += "- The landing hour\n"
+
   print(answer)
-  return True
+  return True  
 
 
 def answerDebug():
   data = {"dep_loc": None, "dep_hour": None,
     "arr_loc": None, "arr_hour": None, "special":"hi"}
-  Res = answer(data,"dep_loc")
+  Res = answer(data)
+
+
+def informationsMissing(data):
+  count = 0
+  infos = data.values()
+  for e in infos:
+    if e == None:
+      count = count + 1
+
+  return count
 
 answerDebug()
