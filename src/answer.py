@@ -4,9 +4,9 @@ import random
 
 answers = {}
 
-answers["HI"] = ["Hello !", "Nice to meet you !", "Hi !"]
+answers["HI"] = ["Hello !", "Nice to meet you !", "Hi !","Welcome !"]
 
-answers["BYE"] = ["Good bye !", "Bye !"]
+answers["BYE"] = ["Good bye !", "Bye !","Have a nice day !"]
 
 answers["YES"] = ["Ok very nice.", "Understood.", "Perfect.", "Ok fine."]
 
@@ -34,15 +34,15 @@ def answer(data,modified = None):
 
     elif data["special"] == "yes":
       answer += random.choice(answers["YES"]) + ' '
-      return False;
+      return True;
 
     elif data["special"] == "no":
       answer += random.choice(answers["NO"]) + ' '
-      return False;
+      return True;
 
     elif data["special"] == "mistake":
       answer += random.choice(answers["MISTAKE"]) + ' '
-      return False;
+      return True;
 
 
   if modified != None:
@@ -91,9 +91,8 @@ def answerDebug():
 
 def informationsMissing(data):
   count = 0
-  infos = data.values()
-  for e in infos:
-    if e == None:
+  for info in data.values():
+    if info == None:
       count = count + 1
 
   return count
