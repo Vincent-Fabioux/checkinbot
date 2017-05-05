@@ -8,9 +8,9 @@ answers["HI"] = ["Hello !", "Nice to meet you !", "Hi !"]
 
 answers["BYE"] = ["Good bye !", "Bye !"]
 
-answers["YES"] = ["Hello !", "Nice to meet you !", "Hi !"]
+answers["YES"] = ["Ok very nice.", "Understood.", "Perfect."]
 
-answers["NO"] = ["Hello !", "Nice to meet you !", "Hi !"]
+answers["NO"] = ["", "Nice to meet you !", "Hi !"]
 
 answers["MISTAKE"] = ["Hello !", "Nice to meet you !", "Hi !"]
 
@@ -24,21 +24,35 @@ def answer(data,modified = None):
   answer = ""
 
   if "special" in data:
-    if data["special"] == "bye":
-      answer += random.choice(answers["BYE"])
-      return False;
     if data["special"] == "hi" and answers["HIBOOL"] == False:
-      answer = random.choice(answers["HI"])
+      answer += random.choice(answers["HI"]) + ' '
       answers["HIBOOL"] = True
 
-    print(answer)
+    elif data["special"] == "bye":
+      answer += random.choice(answers["BYE"]) + ' '
+      return False;
 
+
+  if modified != None:
+    answer += "You changed your "
+    if modified == "dep_loc":
+      answer += "departure location"
+    elif modified == "arr_loc":
+      answer += "arrival location"
+    elif modified == "dep_hour":
+      answer += "departure hour"
+    elif modified == "arr_hour":
+      answer += "arrival hour"
+
+    answer += ", is that correct ?"
+
+  print(answer)
   return True
 
 
 def answerDebug():
   data = {"dep_loc": None, "dep_hour": None,
-      "arr_loc": None, "arr_hour": None, "special":"hi"}
-  Res = answer(data)
+    "arr_loc": None, "arr_hour": None, "special":"hi"}
+  Res = answer(data,"dep_loc")
 
 answerDebug()
