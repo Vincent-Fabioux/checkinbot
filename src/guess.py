@@ -51,17 +51,17 @@ def guess(sent, data, question):
   # Replacement of known keywords with their defined key
   for key, values in keywords.items():
     for value in values:
-      sent = re.sub(value, key, sent)
+      sent = re.sub(r"\b"+value+r"\b", key, sent)
 
   # Unknown words become "UNK"
   sent = re.sub(r"\b[^A-Z ]+\b", "UNK", sent)
 
   # Global multiplier for certain words 
   oddsMult = {}
-  for key, value in data.items()
+  for key, value in data.items():
     if value == None:
       oddsMult[key] = 1
-    else
+    else:
       oddsMult[key] = 2
   if question != None:
     oddsMult[question] = oddsMult[question] * 2
@@ -71,9 +71,7 @@ def guess(sent, data, question):
 def guessDebug():
   data = {"dep_loc": None, "dep_hour": None,
       "arr_loc": None, "arr_hour": None}
-  testSentences = ["good morning",
-      "i'd like to book a flight",
-      "from P_paris to P_dublin at D_030403"]
+  testSentences = ["hello ! i would like to book a flight this MO_050000120000 . are there any flights left at H_100000 for P_Paris ?"]
   for values in testSentences:
     print(values)
     print(guess(values, data, "dep_loc"))
