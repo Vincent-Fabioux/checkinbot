@@ -23,6 +23,6 @@ def normalize(sent):
 
 
 def normalizeDebug():
-    print(normalize("Washington D.C. or St. George's or Port Louis."))
+    print("")
 
 normalizeDebug()
