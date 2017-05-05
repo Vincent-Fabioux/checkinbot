@@ -10,9 +10,9 @@ answers["BYE"] = ["Good bye !", "Bye !"]
 
 answers["YES"] = ["Ok very nice.", "Understood.", "Perfect.", "Ok fine."]
 
-answers["NO"] = ["", "Nice to meet you !", "Hi !"]
+answers["NO"] = ["Sorry to hear.", "We can fix that.", "My apologies.","That's embarassing."]
 
-answers["MISTAKE"] = ["Hello !", "Nice to meet you !", "Hi !"]
+answers["MISTAKE"] = ["No problem.", "It's ok, one more time.", "Don't worry it happens.","Haha no problem."]
 
 answers["HIBOOL"] = False
 
@@ -32,9 +32,21 @@ def answer(data,modified = None):
       answer += random.choice(answers["BYE"]) + ' '
       return False;
 
+    elif data["special"] == "yes":
+      answer += random.choice(answers["YES"]) + ' '
+      return False;
+
+    elif data["special"] == "no":
+      answer += random.choice(answers["NO"]) + ' '
+      return False;
+
+    elif data["special"] == "mistake":
+      answer += random.choice(answers["MISTAKE"]) + ' '
+      return False;
+
 
   if modified != None:
-    answer += "You changed your "
+    answer += "You set your "
     if modified == "dep_loc":
       answer += "departure location"
     elif modified == "arr_loc":
@@ -44,7 +56,7 @@ def answer(data,modified = None):
     elif modified == "arr_hour":
       answer += "arrival hour"
 
-    answer += ", is that correct ?"
+    answer += " to " + data[modified] + ", is that correct ?"
 
   elif modified == None and informationsMissing(data) != 0:
     if informationsMissing(data) == 4:
@@ -58,7 +70,14 @@ def answer(data,modified = None):
     if data["dep_hour"] == None:
       answer += "- The departure hour\n"
     if data["arr_hour"] == None:
-      answer += "- The landing hour\n"
+      answer += "- The arrival hour\n"
+
+  if modified == None and informationsMissing(data) == 0:
+    answer += "As a recap, here are the informations you have inputed :\n"
+    answer += "- Departure location : " + data["dep_loc"] +"\n"
+    answer += "- Arrival location : " + data["arr_loc"] +"\n"
+    answer += "- Departure hour : " + data["dep_hour"] +"\n"
+    answer += "- Arrival hour : " + data["arr_hour"] +"\n"
 
   print(answer)
   return True  
