@@ -32,7 +32,7 @@ def answer(data):
   answer = ""
 
   # If the user says something like "Hello !", special will be set and we will first answer to that.
-  if "special" in data:
+  if data["special"] != None:
     if data["special"] == "hi" and answers["HIBOOL"] == False:
       answer += random.choice(answers["HI"]) + ' '
       answers["HIBOOL"] = True
@@ -107,3 +107,7 @@ def informationsMissing(data):
       count = count + 1
 
   return count
+
+
+if __name__ == "__main__":
+	answerDebug()
