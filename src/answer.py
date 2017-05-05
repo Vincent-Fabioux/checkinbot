@@ -32,7 +32,7 @@ def answer(data):
   answer = ""
 
   # If the user says something like "Hello !", special will be set and we will first answer to that.
-  if "special" in data:
+  if data["special"] != None:
     if data["special"] == "hi" and answers["HIBOOL"] == False:
       answer += random.choice(answers["HI"]) + ' '
       answers["HIBOOL"] = True
@@ -107,3 +107,31 @@ def informationsMissing(data):
       count = count + 1
 
   return count
+  
+def transform(word):
+  if re.match(r'^P_(.*)$', word):
+    temp = re.search(r'^(P_(.*))$', word).group(0)
+    temp = temp.replace("1", " ")
+    temp = temp.replace("2", "_")
+    temp = temp.replace("3", "'")
+    temp = temp.replace("4", ".")
+    return (temp[2:])
+  elif re.match(r'^MO_(\d{12})$', word):
+    temp = re.search(r'^(MO_(\d{12}))$', word).group(0)
+    return (temp[3:5] + ":" + temp[5:7] + ":" + temp[7:9] 
+        + " - " + temp[9:11] + ":" + temp[11:13] + ":" + temp[13:15])
+  elif re.match(r'^D_(\d{8})$', word):
+    temp = re.search(r'^(D_(\d{8}))$', word).group(0)
+    return (temp[2:4] + "/" + temp[4:6] + "/" + temp[6:10])
+  elif re.match(r'^NDATE_(\d{8})$', word):
+    temp = re.search(r'^(NDATE_(\d{8}))$', word).group(0)
+    return (temp[6:8] + "/" + temp[8:10] + "/" + temp[10:14])
+  elif re.match(r'^H_(\d{6})$', word):
+    temp = re.search(r'^(H_(\d{6}))$', word).group(0)
+    return (temp[2:4] + ":" + temp[4:6] + ":" + temp[6:8])
+
+answerDebug()
+
+if __name__ == "__main__":
+	answerDebug()
+
