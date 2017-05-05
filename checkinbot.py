@@ -49,7 +49,7 @@ def checkinbot():
   while(run):
     userInput = input("> ")
     modified = guess(extract(normalize(userInput)), data)
-    run = answer(data, modified)
+    run = answer(data)
 
 
 # Calling of main function
