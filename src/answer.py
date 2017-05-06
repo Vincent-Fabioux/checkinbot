@@ -177,8 +177,8 @@ def checkHour(dateDepartureWanted, dateDeparture,dateArrivalWanted, dateArrival,
       and datetime.fromtimestamp(dateDepartureWanted).date()  <= datetime.fromtimestamp(dateDeparture).date()):
       return True
   elif number == 0:
-    if(datetime.fromtimestamp(dateDepartureWanted).date()  <= datetime.fromtimestamp(dateDeparture).date()
-      and datetime.fromtimestamp(dateArrivalWanted).date()  >= datetime.fromtimestamp(dateArrival).date()):
+    if(datetime.fromtimestamp(dateDepartureWanted).date()  >= datetime.fromtimestamp(dateDeparture).date()
+      and datetime.fromtimestamp(dateArrivalWanted).date()  <= datetime.fromtimestamp(dateArrival).date()):
       return True
   return False
   
