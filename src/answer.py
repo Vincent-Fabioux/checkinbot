@@ -89,6 +89,11 @@ def answer(data):
     if data["arr_hour"] == None:
       answer += "- The arrival hour (Optional)\n"
 
+  
+  # If all the informations were given, we search for a matching flight in data/flights.txt
+  if informationsMissing() == 0:
+    
+
   print(answer)
   return True  
 
@@ -130,3 +135,56 @@ def transform(word):
     temp = re.search(r'^(H_(\d{6}))$', word).group(0)
     return (temp[2:4] + ":" + temp[4:6] + ":" + temp[6:8])
 
+
+# Function that searches into the data/flight.txt file if there is a match with the inputed parameters
+def search(data):
+  with open("./data/flights.txt") as file_pointer:
+    for line in file_pointer.readlines():
+
+      list = line.split("|")
+
+      if(data["dep_loc"] in list and 
+        data["arr_loc"] in list):
+
+        print("We have found a flight that goes from " +
+          data["dep_loc"] + " to " + data["arr_loc"] + ".")
+
+        if(data["dep_date"] in list and data["arr_date"] in list and
+          list.index(data["dep_date"]) == list.index(data["arr_date"]) - 2 ):
+
+          print("We have also found a flight on " + data["dep_date"] +
+            " to arrives on " + data["arr_date"] +".")
+
+          if(data["dep_hour"] == None and data["arr_hour"] == None):
+            print("Congratulations, your flight has been booked and will be at " + 
+            list[list.index(data["dep_loc"])+3] + " and land at " + list[list.index(data["dep_loc"])+6]+".")
+            data["dep_hour"] = list[list.index(data["dep_loc"])+3]
+            data["arr_hour"] = list[list.index(data["dep_loc"])+4]
+            #printSummary(data)
+            break
+
+          elif(data["dep_hour"] != None and data["arr_hour"] == None):
+
+           
+          elif(data["dep_hour"] == None and data["arr_hour"] != None):
+
+
+          elif(data["dep_hour"] in list and data["arr_hour"] in list and
+            list.index(data["dep_hour"]) == list.index(data["arr_hour"]) - 2):
+            print("Congratulations, your flight has been booked and matches all of your criterias !")
+
+          else:
+            print("Sorry, we couldn't find a flight whose departure is at " + data["dep_hour"] +
+              " and whose arrival is at " + data["arr_hour"]+".")
+            break
+          
+
+        elif(data["dep_date"] in list):
+          print("We have found a flight whose departure is on " + data["dep_date"] +
+            " but the arrival date does not match with your request, sorry.")
+          break
+        
+        elif(data["arr_date"] in list):
+          print("We have found a flight whose arrival is on " + data["arr_date"] +
+            " but the departure date does not match with your request, sorry.")
+          break
