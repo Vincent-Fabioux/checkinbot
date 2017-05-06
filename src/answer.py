@@ -36,24 +36,28 @@ def answer(data):
 
   # If the user says something like "Hello !", special will be set and we will first answer to that.
   if data["special"] != None:
-    if data["special"] == "hi" and answers["HIBOOL"] == False:
+    if data["special"] == "HI" and answers["HIBOOL"] == False:
       answer += random.choice(answers["HI"]) + ' '
       answers["HIBOOL"] = True
 
-    elif data["special"] == "bye":
-      answer += random.choice(answers["BYE"]) + ' '
+    elif data["special"] == "BYE":
+      print(random.choice(answers["BYE"]))
       return False
 
-    elif data["special"] == "yes":
-      answer += random.choice(answers["YES"]) + ' '
+    elif data["special"] == "YES":
+      print(random.choice(answers["YES"]))
       return True
 
-    elif data["special"] == "no":
-      answer += random.choice(answers["NO"]) + ' '
+    elif data["special"] == "NO":
+      print(random.choice(answers["NO"]))
       return True
 
-    elif data["special"] == "mistake":
-      answer += random.choice(answers["MISTAKE"]) + ' '
+    elif data["special"] == "MISTAKE":
+      print(random.choice(answers["MISTAKE"]))
+      return True
+
+    elif data["special"] == "UNK":
+      print("Sorry, i didn't understand. Could you repeat please?")
       return True
 
 # We give to the user a recap each time if he already inputed something

@@ -19,8 +19,9 @@ keywords["HI"] = ["hi", "hello", "good morning", "good afternoon",
 # To know when the user wants to end the conversation
 keywords["BYE"] = ["goodbye", "good bye", "bye", "exit", "quit"]
 
-# To confirm informations or to confirm quitting the app
-keywords["YES"] = ["yes", "sure", "yeah", "yep", "exactly", "absolutely"]
+# To confirm informations
+keywords["YES"] = ["yes", "sure", "yeah", "yep", "exactly", "absolutely",
+    "thanks", "thank you"]
 
 # To express disapproval
 keywords["NO"] = ["no", "nope", "never", "not"]
@@ -40,12 +41,14 @@ keywords["DEP"] = ["from", "departure", "take off", "taking off"]
 # Keywords related to arrival
 keywords["ARR"] = ["to", "arrival", "arrive", "land", "landing"]
 
-# Keywords that express thanks
-keywords["THANKS"] = ["thanks", "thank you"]
-
 # Influence of one word over another is defined by infDecrease^distance
 # Only meaningfull words (eg DEP or ARR) are taken into account
-infDecrease = 0.5
+infDecrease = 0.8
+
+
+# Acceptable ratio of unknown tokens over the second most present before
+# the bot tells that he didn't understand
+unkRatio = 10
 
 
 def guess(sent, data):
@@ -57,15 +60,14 @@ def guess(sent, data):
   # Unknown words become "UNK"
   sent = re.sub(r"\b[^A-Z ]+\b", "UNK", sent)
 
-  # Some values have higher odds of being defined by the user:
-  # - Values not already defined in previous sentences
-  # - Value specifically asked by the bot
-  oddsMult = {}
+  # Odds offsets in case there is a draw between two or more odds
+  oddsOffset = {}
   for key, value in data.items():
-    if value == None:
-      oddsMult[key] = 1
-    else:
-      oddsMult[key] = 2
+    if key != "special":
+      if value == None:
+        oddsOffset[key] = 1
+      else:
+        oddsOffset[key] = 0
 
   words = sent.split(" ")
 
@@ -75,19 +77,46 @@ def guess(sent, data):
   for i in range(0, len(words)):
     if re.match("^[A-Z]+_", words[i]):
       dataPos.append(i)
-      odds.append(calculateOdds(words, i, data))
+      odds.append(calculateOdds(words, i, oddsOffset))
 
+  # Odds of this sentence meaning something special (yes, no, etc)
+  specialOdds = {}
+  for key in keywords:
+    if key != "DEP" and key != "ARR" and key != "SM" and key != "GENERIC":
+      for word in words:
+        if word == key:
+          specialOdds[key] = specialOdds.get(key, 0) + 1
 
-  # Chosing where values goes according to odds
-  for i in range(0, len(dataPos)):
-    value = words[dataPos[i]]
-    start = value.split("_")[0]
-    if start == "P":
-      data.update(fillMaxOdds(odds[i], value, ["dep_loc", "arr_loc"]))
-    elif start == "D" or start == "NDATE":
-      data.update(fillMaxOdds(odds[i], value, ["dep_date", "arr_date"]))
-    elif start == "H" or start == "MO":
-      data.update(fillMaxOdds(odds[i], value, ["dep_hour", "arr_hour"]))
+  if len(dataPos) > 0: # If the user entered meaningfull data
+    # Chosing where values goes according to odds
+    for i in range(0, len(dataPos)):
+      value = words[dataPos[i]]
+      start = value.split("_")[0]
+      if start == "P":
+        data.update(fillMaxOdds(odds[i], oddsOffset, value,
+          ["dep_loc", "arr_loc"]))
+      elif start == "D" or start == "NDATE":
+        data.update(fillMaxOdds(odds[i], oddsOffset, value,
+          ["dep_date", "arr_date"]))
+      elif start == "H" or start == "MO":
+        data.update(fillMaxOdds(odds[i], oddsOffset, value,
+          ["dep_hour", "arr_hour"]))
+    data["special"] = None
+  else: # Else we search a general meaning to the phrase
+    maxOdd = 0
+    highestKey = None
+    unkNumber = 0
+    for key, value in specialOdds.items():
+      if key == "UNK":
+        unkNumber = value
+      elif value > maxOdd:
+        maxOdd = value
+        highestKey = key
+    if highestKey == None or unkNumber/unkRatio > maxOdd:
+      data["special"] = "UNK"
+    else:
+      data["special"] = highestKey
+      
 
 # Calculate odds for the nth word in a sentence according to previous words
 def calculateOdds(words, n, oddsModel):
@@ -116,18 +145,25 @@ def calculateOdds(words, n, oddsModel):
 
 
 # Maps a value with one of the possible keys according to the odds of each key
-def fillMaxOdds(odds, newValue, possible):
-  maxOdds = None
-  toFill = None
+def fillMaxOdds(odds, oddsOffset, newValue, possible):
+  maxOdds = -1
+  toFill = []
   for key, value in odds.items():
-    if (key in possible) and (maxOdds == None or value > maxOdds):
-      maxOdds = value
-      toFill = key
+    if (key in possible) and value >= maxOdds:
+      if value > maxOdds:
+        maxOdds = value
+        toFill = [key]
+      else:
+        toFill.append(key)
 
-  if toFill == None:
-    return None
+  if len(toFill) > 1:
+    for key in toFill:
+      if oddsOffset[key] != 0:
+        return {key: newValue}
+  elif len(toFill) == 1:
+    return {toFill[0]: newValue}
   else:
-    return {toFill: newValue}
+    return None
 
 
 # Only for debugging purposes
