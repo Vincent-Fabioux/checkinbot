@@ -1,10 +1,19 @@
-Abu Dhabi
-Abuja
-Accra
-Adamstown
-Addis Ababa
-Kuala Lumpur
-Putrajaya
-Kuwait City
-Libreville
-Lilongwe
+Berlin
+Vienne
+Bruxelles
+Copenhague
+Madrid
+Paris
+Athènes
+Budapest
+Dublin
+Reykjavik
+Rome
+Luxembourg
+Monaco
+Amsterdam
+Varsovie
+Lisbonne
+Prague
+Londres
+Moscou

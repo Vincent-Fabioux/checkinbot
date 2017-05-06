@@ -9,6 +9,7 @@ as a way to try to grab the meaning of the inputed sentence.
 
 import re
 import random
+from datetime import datetime
 
 # This dictionary contains answers to most things that a user can say as an answer to one of our questions
 answers = {}
@@ -88,19 +89,17 @@ def answer(data):
       answer += "- The arrival date\n"
     if data["arr_hour"] == None:
       answer += "- The arrival hour (Optional)\n"
-
   
   # If all the informations were given, we search for a matching flight in data/flights.txt
-  if informationsMissing() == 0:
+  if informationsMissing(data) == 0:
+    search(data);
     
-
-  print(answer)
   return True  
 
 
 def answerDebug():
-  data = {"dep_loc": None, "dep_hour": None,
-    "arr_loc": None, "arr_hour": None, "dep_date": None, "arr_date": None, "special":"hi"}
+  data = {"dep_loc": "P_paris", "dep_hour": "",
+    "arr_loc": "P_madrid", "arr_hour": "", "dep_date": "D_06052017", "arr_date": "D_20052017", "special":"hi"}
   Res = answer(data)
 
 
@@ -110,7 +109,8 @@ def informationsMissing(data):
   for info in data.values():
     if info == None and info not in specials:
       count = count + 1
-
+      print (info)
+  
   return count
   
 def transform(word):
@@ -138,53 +138,24 @@ def transform(word):
 
 # Function that searches into the data/flight.txt file if there is a match with the inputed parameters
 def search(data):
-  with open("./data/flights.txt") as file_pointer:
-    for line in file_pointer.readlines():
+  flights = list()
+  # Recovery of flights with city of departure and arrival is given
+  with open("../data/flights.txt") as file_pointer:
+    for lines in file_pointer.readlines():
+      line = lines.split("|")
+      if(data["dep_loc"][2:] in line[0].lower() and 
+        data["arr_loc"][2:] in line[1].lower()):
+          flights = line[2:]
+      i = 0
+  
+  # Flights infos recovery
+  while (i < len(flights)):
+    idFlights = flights[i]
+    dateDeparture = datetime.fromtimestamp(int(flights[i + 1]))
+    dateArrival = datetime.fromtimestamp(int(flights[i + 2]))
+    
+    # Faire les vérifications
+    
+    i = i + 3
 
-      list = line.split("|")
-
-      if(data["dep_loc"] in list and 
-        data["arr_loc"] in list):
-
-        print("We have found a flight that goes from " +
-          data["dep_loc"] + " to " + data["arr_loc"] + ".")
-
-        if(data["dep_date"] in list and data["arr_date"] in list and
-          list.index(data["dep_date"]) == list.index(data["arr_date"]) - 2 ):
-
-          print("We have also found a flight on " + data["dep_date"] +
-            " to arrives on " + data["arr_date"] +".")
-
-          if(data["dep_hour"] == None and data["arr_hour"] == None):
-            print("Congratulations, your flight has been booked and will be at " + 
-            list[list.index(data["dep_loc"])+3] + " and land at " + list[list.index(data["dep_loc"])+6]+".")
-            data["dep_hour"] = list[list.index(data["dep_loc"])+3]
-            data["arr_hour"] = list[list.index(data["dep_loc"])+4]
-            #printSummary(data)
-            break
-
-          elif(data["dep_hour"] != None and data["arr_hour"] == None):
-
-           
-          elif(data["dep_hour"] == None and data["arr_hour"] != None):
-
-
-          elif(data["dep_hour"] in list and data["arr_hour"] in list and
-            list.index(data["dep_hour"]) == list.index(data["arr_hour"]) - 2):
-            print("Congratulations, your flight has been booked and matches all of your criterias !")
-
-          else:
-            print("Sorry, we couldn't find a flight whose departure is at " + data["dep_hour"] +
-              " and whose arrival is at " + data["arr_hour"]+".")
-            break
-          
-
-        elif(data["dep_date"] in list):
-          print("We have found a flight whose departure is on " + data["dep_date"] +
-            " but the arrival date does not match with your request, sorry.")
-          break
-        
-        elif(data["arr_date"] in list):
-          print("We have found a flight whose arrival is on " + data["arr_date"] +
-            " but the departure date does not match with your request, sorry.")
-          break
+answerDebug();
