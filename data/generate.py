@@ -23,7 +23,9 @@ __contact__ = "Vincent Fabioux <vincent.fabioux@u-psud.fr>"
 import argparse
 from datetime import datetime
 from itertools import product
+from os import path, stat
 from random import randint
+from sys import stdout
 
 
 def main():
@@ -44,27 +46,37 @@ def main():
   if interval < 0:
     raise ValueError("Please set a starting date prior to the ending date.")
 
+  print("Generating a list of flights:")
+
+  # Paths of files to use
+  citiesPath = path.join(path.dirname(__file__), "cities.txt")
+  flightsPath = path.join(path.dirname(__file__), "flights.txt")
+
   # Loads list of cities from file
   cities = []
-  with open("cities.txt", "r") as data:
+  with open(citiesPath, "r") as data:
     for line in data.readlines():
       if line.strip() != "":
         cities.append(line.strip())
 
   # Generates all combinations of two cities
   cities = [x + "|" + y for x, y in product(cities, cities) if x != y]
+  citiesNumber = len(cities)
   
   # Generates wanted flights
   count = 0
   dates = [0, 0]
-  with open("flights.txt", "w+") as data:
-    for city in cities:
+  with open(flightsPath, "w+") as data:
+    for i, city in enumerate(cities):
       data.write(city)
-      for i in range(0, number):
+      for j in range(0, number):
         randomDate(start, interval, dates)
         data.write("|" + str(count) + "|" + str(dates[0]) + "|" + str(dates[1]))
         count += 1
       data.write("\n")
+      printProgress(i / citiesNumber * 100)
+  print("\n\"" + flightsPath + "\" file generated with a size of "
+      + "{:,}".format(stat(flightsPath).st_size) + " Bytes.")
   
 
 # Generate two random timestamps between two dates
@@ -72,6 +84,13 @@ def randomDate(start, interval, dates):
   rand = randint(0, interval)
   dates[0] = start + rand
   dates[1] = dates[0] + randint(0, interval - rand)
+
+
+# Prints or update a progression bar with a certain percentage
+def printProgress(n):
+  sharps = round(n/5)
+  stdout.write("\r> [" + "#"*sharps + "-"*(20-sharps) + "] "
+      + str(round(n)) + "%")
 
 
 # Calling of main function
