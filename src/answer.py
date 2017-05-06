@@ -10,6 +10,7 @@ as a way to try to grab the meaning of the inputed sentence.
 import re
 import random
 from datetime import datetime
+from datetime import time
 
 # This dictionary contains answers to most things that a user can say as an answer to one of our questions
 answers = {}
@@ -98,8 +99,8 @@ def answer(data):
 
 
 def answerDebug():
-  data = {"dep_loc": "P_paris", "dep_hour": "",
-    "arr_loc": "P_madrid", "arr_hour": "", "dep_date": "D_06052017", "arr_date": "D_20052017", "special":"hi"}
+  data = {"dep_loc": "P_paris", "dep_hour": "H_050000",
+    "arr_loc": "P_madrid", "arr_hour": "MO_050000120000", "dep_date": "NDATE_06052017", "arr_date": "D_20052017", "special":"hi"}
   Res = answer(data)
 
 
@@ -113,7 +114,7 @@ def informationsMissing(data):
   
   return count
   
-def transform(word):
+def transformForDisplay(word):
   if re.match(r'^P_(.*)$', word):
     temp = re.search(r'^(P_(.*))$', word).group(0)
     temp = temp.replace("1", " ")
@@ -134,28 +135,91 @@ def transform(word):
   elif re.match(r'^H_(\d{6})$', word):
     temp = re.search(r'^(H_(\d{6}))$', word).group(0)
     return (temp[2:4] + ":" + temp[4:6] + ":" + temp[6:8])
+    
+def transformHours(word):
+  if re.match(r'^MO_(\d{12})$', word):
+    temp = re.search(r'^(MO_(\d{12}))$', word).group(0)
+    return [time(int (temp[3:5]), int(temp[5:7]), int(temp[7:9])), 
+          time(int(temp[9:11]), int(temp[11:13]), int(temp[13:15]))]
+  elif re.match(r'^H_(\d{6})$', word):
+    temp = re.search(r'^(H_(\d{6}))$', word).group(0)
+    return time(int(temp[2:4]), int(temp[4:6]), int(temp[6:8]))
+  return None
 
+def checkHour(dateDepartureWanted, dateDeparture,dateArrivalWanted, dateArrival, hour, number):
+  if type(hour) is datetime.time:
+    hourTemp = hour.hour() * 3600 + hour.minute() * 60 + hour.second()
+  if number == 1:
+    if(dateDepartureWanted + hourTemp <= dateDeparture and dateArrivalWanted >= dateArrival):
+      return True
+  else if number == -1:
+    if(dateDepartureWanted <= dateDeparture and dateArrivalWanted + hourTemp >= dateArrival):
+      return True
+  else if number == 0:
+    if(dateDepartureWanted <= dateDeparture and dateArrivalWanted >= dateArrival):
+      return True
+  return False;
+  
+def checkHourInterval(dateDepartureWanted, dateDeparture,dateArrivalWanted, dateArrival, interval, number):
+  t1 = interval[0].hour() * 3600 + interval[0].minute() * 60 + interval[0].second()
+  t2 = interval[1].hour() * 3600 + interval[1].minute() * 60 + interval[1].second()
+  
+  if number == 1:
+    if(dateDepartureWanted + t1 <= dateDeparture and dateDepartureWanted + t2 >= dateDeparture and dateArrivalWanted >= dateArrival):
+      return True
+  else if number == -1:
+    if(dateDepartureWanted <= dateDeparture and dateArrivalWanted + t1 <= dateArrival and dateArrivalWanted + t2 >= dateArrival):
+      return True
 
 # Function that searches into the data/flight.txt file if there is a match with the inputed parameters
 def search(data):
   flights = list()
-  # Recovery of flights with city of departure and arrival is given
+  
+  cityDeparture = transformForDisplay(data["dep_loc"])
+  cityArrival = transformForDisplay(data["arr_loc"])
+  temp = transformForDisplay(data["dep_date"])
+  dateDepartureWanted = datetime(int(temp[6:11]), int(temp[3:5]), int(temp[0:2]), 0, 0, 0)
+  temp= transformForDisplay(data["arr_date"])
+  dateArrivalWanted = datetime(int(temp[6:11]), int(temp[3:5]), int(temp[0:2]), 0, 0, 0)
+  hourDeparture = transformHours(data["dep_hour"])
+  hourArrival = transformHours(data["arr_hour"])
+  
+  # Recovery of flights with the city of departure and arrival given
   with open("../data/flights.txt") as file_pointer:
     for lines in file_pointer.readlines():
       line = lines.split("|")
-      if(data["dep_loc"][2:] in line[0].lower() and 
-        data["arr_loc"][2:] in line[1].lower()):
+      if(cityDeparture in line[0].lower() and 
+        cityArrival in line[1].lower()):
           flights = line[2:]
-      i = 0
+  i = 0
   
   # Flights infos recovery
   while (i < len(flights)):
     idFlights = flights[i]
-    dateDeparture = datetime.fromtimestamp(int(flights[i + 1]))
-    dateArrival = datetime.fromtimestamp(int(flights[i + 2]))
+    dateDeparture = datetime.fromtimestamp(int(flights[i + 1])*60)
+    dateArrival = datetime.fromtimestamp(int(flights[i + 2])*60)
     
-    # Faire les vérifications
+    if hourDeparture == None:
+      # Departure time null and arrival time null
+      if hourArrival == None:
+        
+      # Departure time null and arrival time not null
+      else:
+        # In the case of an interval of hours
+        if type(hourArrival) is list:
+
+        else:
+          
+    else:
+      # Departure time not null and arrival time null
+      if hourArrival == None:
+        # In the case of an interval of hours
+        if type(hourArrival) is list:
+          
+        else:
+      # Departure time not null and arrival time not null
+      else:
+    
     
     i = i + 3
-
 answerDebug();
