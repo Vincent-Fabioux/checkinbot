@@ -161,6 +161,7 @@ def fillMaxOdds(odds, oddsOffset, newValue, possible):
       if oddsOffset[key] != 0:
         oddsOffset[key] = 0
         return {key: newValue}
+    return {toFill[0]: newValue}
   elif len(toFill) == 1: # One key have the highest odds
     oddsOffset[toFill[0]] = 0
     return {toFill[0]: newValue}

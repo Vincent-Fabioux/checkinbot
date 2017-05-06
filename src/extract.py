@@ -172,6 +172,3 @@ def getCities():
   content = [x.strip() for x in countries] 
   return content
   
-  
-  
-  
