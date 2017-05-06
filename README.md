@@ -7,9 +7,11 @@ This is a very short project, and as such a lot of improvements could be made.
 For example, prices are not taken into account, nor connections or flight class.
 
 ## Dependencies
-To run this program, you will need Python 3 and a command-line interface.
-According to how you have setup Python 3's path, you may need to write `python`
-instead of `python3` for the commands described here.
+To run this program, you will need
+[Python 3](https://www.python.org/)
+and a command-line interface. According to how you have setup Python 3's path,
+you may need to write `python` instead of `python3` for the commands described
+here.
 
 All libraries used are included in the base installation of Python 3.
 
@@ -23,9 +25,10 @@ should only contain alphanumeric characters and spaces.
 A flight list is also required in a file named `data/flights.txt`. This file can
 be randomly generated using the command `python3 data/generate.py {start}
 {end} {number}` where:
-* start is the earliest possible date for the departure of a flight
-* end is the latest possible date for the arrival of a flight
-* number is the number of flights generated for each pair of cities
+* {start} is the earliest possible date for the departure of a flight
+* {end} is the latest possible date for the arrival of a flight
+* dates should be given in a DD-MM-YYYY format
+* {number} is the number of flights generated for each pair of cities
 If you test this program with dates outside of dates used for generating
 flights, the bot will not be able to find any suitable flight.
 
@@ -52,4 +55,4 @@ the testing of a particular function with particular data without the need of
 proper functionning of other functions.
 
 For example, `python3 checkinbot -d tokenise` will execute tokeniseDebug() from
-src/tokenise.py.
+`src/tokenise.py`.
