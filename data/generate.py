@@ -8,10 +8,20 @@ exponentially ; see binomial coefficient calculation for more informations
 about 2 lists combinations count. You can also set the number of flights per
 city to city pair ; increasing such number will increase the file size in a
 linear way.
+
+Format:
+City1|City2|flight1_id|departure1_timestamp|arrival1_timestamp|flight2_id|...\n
+City1|City3|flight1_id|...
+
+Timestamps are counted in minutes.
 """
 
+__authors__ = "Vincent Fabioux, Nicolas Montoro, Olivier Nappert"
+__version__ = "0.1-dev"
+__contact__ = "Vincent Fabioux <vincent.fabioux@u-psud.fr>"
+
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime
 from itertools import product
 from random import randint
 
@@ -31,6 +41,8 @@ def main():
   start = int(datetime.strptime(args.start, "%d-%m-%Y").timestamp()/60)
   end = int(datetime.strptime(args.end, "%d-%m-%Y").timestamp()/60)
   interval = end - start
+  if interval < 0:
+    raise ValueError("Please set a starting date prior to the ending date.")
 
   # Loads list of cities from file
   cities = []
