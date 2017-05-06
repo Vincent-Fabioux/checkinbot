@@ -177,7 +177,8 @@ def checkHour(dateDepartureWanted, dateDeparture,dateArrivalWanted, dateArrival,
       and datetime.fromtimestamp(dateDepartureWanted).date()  <= datetime.fromtimestamp(dateDeparture).date()):
       return True
   elif number == 0:
-    if(dateDepartureWanted <= dateDeparture and dateArrivalWanted >= dateArrival):
+    if(datetime.fromtimestamp(dateDepartureWanted).date()  <= datetime.fromtimestamp(dateDeparture).date()
+      and datetime.fromtimestamp(dateArrivalWanted).date()  >= datetime.fromtimestamp(dateArrival).date()):
       return True
   return False
   
@@ -240,9 +241,10 @@ def search(data):
 
     if hourDeparture == None:
       # Departure time null and arrival time null
-      if hourArrival == None and checkHour(datetime.timestamp(dateDepartureWanted), datetime.timestamp(dateDeparture), datetime.timestamp(dateArrivalWanted), datetime.timestamp(dateArrival), 0, 0):
-        matchDates = matchesDate
-        break
+      if hourArrival == None:
+        if(checkHour(datetime.timestamp(dateDepartureWanted), datetime.timestamp(dateDeparture), datetime.timestamp(dateArrivalWanted), datetime.timestamp(dateArrival), 0, 0)):
+          matchDates = matchesDate
+          break
       # Departure time null and arrival time not null
       else:
         # In the case of an interval of hours
