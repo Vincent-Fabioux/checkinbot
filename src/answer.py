@@ -41,35 +41,35 @@ def answer(data):
 
     elif data["special"] == "bye":
       answer += random.choice(answers["BYE"]) + ' '
-      return False;
+      return False
 
     elif data["special"] == "yes":
       answer += random.choice(answers["YES"]) + ' '
-      return True;
+      return True
 
     elif data["special"] == "no":
       answer += random.choice(answers["NO"]) + ' '
-      return True;
+      return True
 
     elif data["special"] == "mistake":
       answer += random.choice(answers["MISTAKE"]) + ' '
-      return True;
+      return True
 
 # We give to the user a recap each time if he already inputed something
   if informationsMissing(data) < 6:
     answer += "As a recap, here are the informations you have inputed :\n"
     if data["dep_loc"] != None:
-      answer += "- Departure location : " + data["dep_loc"] + "\n"
+      answer += "- Departure location : " + transformForDisplay(data["dep_loc"]) + "\n"
     if data["dep_date"] != None and data["dep_hour"] == None:
-      answer += "- Departure date : " + data["dep_date"] + " at any hour\n"
+      answer += "- Departure date : " + transformForDisplay(data["dep_date"]) + " at any hour\n"
     elif data["dep_date"] != None and data["dep_hour"] != None:
-      answer += "- Departure date : " + data["dep_date"] + " at " + data["dep_hour"] + "\n"
+      answer += "- Departure date : " + data["dep_date"] + " at " + transformForDisplay(data["dep_hour"]) + "\n"
     if data["arr_loc"] != None:
-      answer += "- Arrival location : " + data["arr_loc"] + "\n"
+      answer += "- Arrival location : " + transformForDisplay(data["arr_loc"]) + "\n"
     if data["arr_date"] != None and data["arr_hour"] == None:
-      answer += "- Arrival date : " + data["arr_date"] + " at any hour\n"
+      answer += "- Arrival date : " + transformForDisplay(data["arr_date"]) + " at any hour\n"
     elif data["arr_date"] != None and data["arr_hour"] != None:
-      answer += "- Arrival date : " + data["arr_date"] + " at " + data["arr_hour"] + "\n"
+      answer += "- Arrival date : " + data["arr_date"] + " at " + transformForDisplay(data["arr_hour"]) + "\n"
 
   # If nothing has been modified nor inputed relative to the flight, we give instructions
   if informationsMissing(data) > 0:
@@ -92,8 +92,9 @@ def answer(data):
       answer += "- The arrival hour (Optional)\n"
   
   # If all the informations were given, we search for a matching flight in data/flights.txt
+  print(answer)
   if informationsMissing(data) == 0:
-    search(data);
+    search(data)
     
   return True  
 
@@ -158,17 +159,19 @@ def checkHour(dateDepartureWanted, dateDeparture,dateArrivalWanted, dateArrival,
   else if number == 0:
     if(dateDepartureWanted <= dateDeparture and dateArrivalWanted >= dateArrival):
       return True
-  return False;
+  return False
   
 def checkHourInterval(dateDepartureWanted, dateDeparture,dateArrivalWanted, dateArrival, interval, number):
   t1 = interval[0].hour() * 3600 + interval[0].minute() * 60 + interval[0].second()
   t2 = interval[1].hour() * 3600 + interval[1].minute() * 60 + interval[1].second()
   
   if number == 1:
-    if(dateDepartureWanted + t1 <= dateDeparture and dateDepartureWanted + t2 >= dateDeparture and dateArrivalWanted >= dateArrival):
+    if(dateDepartureWanted + t1 <= dateDeparture and dateDepartureWanted + t2 >= dateDeparture 
+    	and dateArrivalWanted >= dateArrival):
       return True
   else if number == -1:
-    if(dateDepartureWanted <= dateDeparture and dateArrivalWanted + t1 <= dateArrival and dateArrivalWanted + t2 >= dateArrival):
+    if(dateDepartureWanted <= dateDeparture and dateArrivalWanted + t1 <= dateArrival 
+    	and dateArrivalWanted + t2 >= dateArrival):
       return True
 
 # Function that searches into the data/flight.txt file if there is a match with the inputed parameters
@@ -191,6 +194,7 @@ def search(data):
       if(cityDeparture in line[0].lower() and 
         cityArrival in line[1].lower()):
           flights = line[2:]
+          break
   i = 0
   
   # Flights infos recovery
@@ -222,4 +226,4 @@ def search(data):
     
     
     i = i + 3
-answerDebug();
+answerDebug()
