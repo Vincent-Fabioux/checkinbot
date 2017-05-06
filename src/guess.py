@@ -156,13 +156,15 @@ def fillMaxOdds(odds, oddsOffset, newValue, possible):
       else:
         toFill.append(key)
 
-  if len(toFill) > 1:
+  if len(toFill) > 1: # Two keys have the highest odds : usage of OddsOffset
     for key in toFill:
       if oddsOffset[key] != 0:
+        oddsOffset[key] = 0
         return {key: newValue}
-  elif len(toFill) == 1:
+  elif len(toFill) == 1: # One key have the highest odds
+    oddsOffset[toFill[0]] = 0
     return {toFill[0]: newValue}
-  else:
+  else: # No key (wrong call of this function)
     return None
 
 
