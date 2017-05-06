@@ -11,6 +11,7 @@ import re
 import random
 from datetime import datetime
 from datetime import time
+from os import path
 
 # This dictionary contains answers to most things that a user can say as an answer to one of our questions
 answers = {}
@@ -215,7 +216,7 @@ def search(data):
   matchCities =  "Sorry, we didn't find a flight with the requested cities."
   
   # Recovery of flights with the city of departure and arrival given
-  with open("../data/flights.txt") as file_pointer:
+  with open(path.join(path.dirname(__file__), "../data/flights.txt")) as file_pointer:
     for lines in file_pointer.readlines():
       line = lines.split("|")
       if(cityDeparture in line[0].lower() and 
@@ -286,4 +287,3 @@ def search(data):
               break
     i = i + 3
   print (matchCities + matchDates)
-answerDebug()

@@ -8,8 +8,6 @@ the departure date and location and the arrival date and location.
 It then give the user corresponding flights according to a textfile
 database.
 
-A lot of features such as the price range selection, time sorting or
-
 
 Homepage and documentation: https://github.com/Vincent-Fabioux/checkinbot
 """
@@ -52,6 +50,11 @@ def checkinbot():
       "arr_loc": None, "arr_date": None, "arr_hour": None,
       "special": None}
   
+  print("Hi! My name is Checkinbot, I am here to help you book a flight\n"
+      + "from any capital city in western Europe to any capital city in\n"
+      + "the same zone.\n"
+      + "To start things off, could you tell me what is your travel plan?")
+
   run = True
   while(run):
     userInput = input("> ")
