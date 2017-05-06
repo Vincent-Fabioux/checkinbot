@@ -98,7 +98,8 @@ def answer(data):
   
   # If all the informations were given, we search for a matching flight in data/flights.txt
   print(answer)
-  if ((informationsMissing(data) == 0) 
+  if ((informationsMissing(data) == 0)
+  or (informationsMissing(data) == 3 and data['dep_hour'] == None and data['arr_hour'] == None and data['special'] == None) 
   or (informationsMissing(data) == 2 and data['dep_hour'] == None and data['arr_hour'] == None)
   or (informationsMissing(data) == 1 and (data['dep_hour'] == None or data['arr_hour'] == None))):
     print("Every needed informations have been inputed, we are trying to find you a flights ...\n")
